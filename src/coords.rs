@@ -1,7 +1,7 @@
 use std::ops::Sub;
 use serde::{Serialize,Deserialize};
 
-#[derive(Serialize,Deserialize,Debug,PartialEq)]
+#[derive(Serialize,Deserialize,Debug,PartialEq,Clone)]
 pub struct Coords {
     pub lat: f64,
     pub lng: f64

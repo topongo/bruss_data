@@ -5,7 +5,7 @@ use crate::Coords;
 use super::BrussType;
 use super::FromTT;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Stop {
     pub id: u16,
     pub code: String,
