@@ -5,7 +5,7 @@ use super::{BrussType, FromTT};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Route {
-    id: u16,
+    pub id: u16,
     #[serde(rename = "type")]
     ty: u16,
     area: u16,

@@ -1,6 +1,7 @@
 use serde::{Serialize,Deserialize};
 use tt::{TTStop,AreaType};
 use crate::Coords;
+use crate::InArea;
 
 use super::BrussType;
 use super::FromTT;
@@ -34,6 +35,16 @@ impl FromTT<TTStop> for Stop {
     fn from_tt(value: TTStop) -> Self {
         let TTStop { id, code, description, lat, lng, altitude, name, street, town, ty, wheelchair_boarding } = value;
         Self { id, code, description, position: Coords::new(lat, lng), altitude, name, street, town, ty, wheelchair_boarding }
+    }
+}
+
+impl InArea for Stop {
+    fn ty(&self) -> AreaType {
+        self.ty
+    }
+
+    fn id(&self) -> u16 {
+        self.id
     }
 }
 

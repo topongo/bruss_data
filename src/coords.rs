@@ -1,7 +1,7 @@
 use std::ops::Sub;
-use serde::{Serialize,Deserialize};
+use serde::{Serialize,Deserialize, ser::SerializeSeq};
 
-#[derive(Serialize,Deserialize,Debug,PartialEq,Clone)]
+#[derive(Deserialize,Debug,PartialEq,Clone)]
 pub struct Coords {
     pub lat: f64,
     pub lng: f64
@@ -27,3 +27,15 @@ impl Sub for Coords {
         ((self.lat - rhs.lat).abs().powi(2) + (self.lng - rhs.lng).abs().powi(2)).sqrt()
     }
 }
+
+impl Serialize for Coords {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer {
+        let mut state = serializer.serialize_seq(Some(2))?;
+        state.serialize_element(&self.lat)?;
+        state.serialize_element(&self.lng)?;
+        state.end()
+    }
+}
+
