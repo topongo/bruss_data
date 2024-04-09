@@ -33,8 +33,8 @@ impl Serialize for Coords {
         where
             S: serde::Serializer {
         let mut state = serializer.serialize_seq(Some(2))?;
-        state.serialize_element(&self.lat)?;
         state.serialize_element(&self.lng)?;
+        state.serialize_element(&self.lat)?;
         state.end()
     }
 }

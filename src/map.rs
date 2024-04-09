@@ -88,7 +88,7 @@ impl PartialEq<Vec<u16>> for Path {
 }
 
 impl BrussType for Segment {
-    const DB_NAME: &'static str = "sequence";
+    const DB_NAME: &'static str = "segments";
 }
 
 pub fn sequence_hash(ty: AreaType, seq: &Vec<u16>) -> String {

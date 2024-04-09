@@ -1,11 +1,11 @@
 use std::collections::{HashMap, BTreeMap};
 
 use chrono::NaiveTime;
-use serde::{Serialize,Deserialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tt::{TTTrip, AreaType};
 use sha1::Digest;
 
-use crate::{BrussType, FromTT};
+use crate::{sequence_hash, BrussType, FromTT};
 
 #[derive(Serialize,Deserialize,Debug)]
 pub enum Direction {
@@ -39,7 +39,8 @@ pub struct Trip {
     pub bus_id: Option<u16>,
     pub route: u16,
     // List of stop ids
-    pub path: Vec<u16>,
+    pub path: String,
+    #[serde(serialize_with = "serialize_u16_keys", deserialize_with = "deserialize_u16_keys")]
     pub times: HashMap<u16, StopTime>,
     #[serde(rename = "type")]
     pub ty: AreaType,
@@ -54,7 +55,7 @@ impl Trip {
         last_stop: u16,
         bus_id: Option<u16>,
         route: u16,
-        path: Vec<u16>,
+        path: String,
         times: HashMap<u16, StopTime>,
         ty: AreaType
     ) -> Self {
@@ -69,14 +70,54 @@ impl BrussType for Trip {
 impl FromTT<TTTrip> for Trip {
     fn from_tt(value: TTTrip) -> Self {
         let TTTrip { id, delay, direction, next_stop, last_stop, bus_id, route, stop_times, ty } = value;
-        let mut path: BTreeMap<u16, u16> = BTreeMap::new();
-        let mut times: HashMap<u16, StopTime> = HashMap::with_capacity(stop_times.len());
-        for st in stop_times {
-            path.insert(st.sequence, st.stop);
-            times.insert(st.stop, StopTime { arrival: st.arrival, departure: st.departure });
+        let mut times = HashMap::new();
+        let path = sequence_hash(ty, &stop_times.iter()
+            .map(|st| {
+                let tt::StopTime { stop, arrival, departure, .. } = *st;
+                times.insert(stop, StopTime { arrival, departure });
+                st.stop
+            })
+            .collect());
+        Self { 
+            id,
+            delay: delay.unwrap_or(0.) as i32,
+            direction: Direction::from(direction), 
+            next_stop,
+            last_stop,
+            bus_id,
+            route,
+            path,
+            ty,
+            times,
         }
-        Self { id, delay: delay.unwrap_or(0.) as i32, direction: Direction::from(direction), next_stop, last_stop, bus_id, route, path: path.values().map(|v| *v).collect(), times, ty }
     }
 }
 
+ 
+fn serialize_u16_keys<S, T>(map: &HashMap<u16, T>, serializer: S) -> Result<S::Ok, S::Error> 
+    where 
+        S: Serializer,
+        T: Serialize
+{
+    map.iter()
+        .map(|(k, v)| (k.to_string(), v))
+        .collect::<HashMap<String, &T>>()
+        .serialize(serializer)
+}
+
+fn deserialize_u16_keys<'de, D, T>(deserializer: D) -> Result<HashMap<u16, T>, D::Error> 
+    where 
+        D: Deserializer<'de>, 
+        T: Deserialize<'de> 
+{
+    let h: HashMap<String, T> = HashMap::deserialize(deserializer)?;
+    let mut o: HashMap<u16, T> = HashMap::with_capacity(h.len());
+    for (k, v) in h {
+        match k.parse::<u16>() {
+            Ok(p) => { o.insert(p, v); },
+            Err(e) => return Err(serde::de::Error::custom(format!("cannot parse int: {}", e)))
+        }
+    } 
+    Ok(o)
+}
  
