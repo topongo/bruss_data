@@ -50,6 +50,10 @@ impl<T: InArea> AreaHelper<T> {
             AreaType::U => &mut self.urban,
         }
     }
+    
+    pub fn len(&self) -> usize {
+        self.urban.len() + self.extra.len()
+    }
 }
 
 impl<T: InArea> FromIterator<T> for AreaHelper<T> {

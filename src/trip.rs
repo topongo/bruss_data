@@ -37,6 +37,7 @@ pub struct Trip {
     pub last_stop: u16,
     pub bus_id: Option<u16>,
     pub route: u16,
+    pub headsign: String,
     // List of stop ids
     pub path: String,
     #[serde(serialize_with = "serialize_u16_keys", deserialize_with = "deserialize_u16_keys")]
@@ -54,11 +55,12 @@ impl Trip {
         last_stop: u16,
         bus_id: Option<u16>,
         route: u16,
+        headsign: String,
         path: String,
         times: HashMap<u16, StopTime>,
         ty: AreaType
     ) -> Self {
-        Self { id, delay, direction, next_stop, last_stop, bus_id, route, path, times, ty }
+        Self { id, delay, direction, next_stop, last_stop, bus_id, route, path, times, ty, headsign }
     } 
 }
 
@@ -68,7 +70,7 @@ impl BrussType for Trip {
 
 impl FromTT<TTTrip> for Trip {
     fn from_tt(value: TTTrip) -> Self {
-        let TTTrip { id, delay, direction, next_stop, last_stop, bus_id, route, stop_times, ty } = value;
+        let TTTrip { id, delay, direction, next_stop, last_stop, bus_id, route, stop_times, ty, headsign } = value;
         let mut times = HashMap::new();
         let path = sequence_hash(ty, &stop_times.iter()
             .map(|st| {
@@ -88,6 +90,7 @@ impl FromTT<TTTrip> for Trip {
             path,
             ty,
             times,
+            headsign,
         }
     }
 }

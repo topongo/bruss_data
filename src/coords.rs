@@ -1,6 +1,7 @@
 use std::ops::Sub;
-use serde::{Serialize,Deserialize, ser::SerializeSeq, de::Visitor};
-use serde::{de::Error as DeError, ser::Error as SerError};
+use serde::{Serialize,Deserialize, ser::SerializeSeq, de::Visitor, Serializer, Deserializer};
+#[allow(unused_imports)]
+use serde::{de::{Error as DeError,SeqAccess}, ser::Error as SerError};
 
 #[derive(Debug,PartialEq,Clone)]
 pub struct Coords {
@@ -32,7 +33,7 @@ impl Sub for Coords {
 impl Serialize for Coords {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
         where
-            S: serde::Serializer {
+            S: Serializer {
         let mut state = serializer.serialize_seq(Some(2))?;
         state.serialize_element(&self.lng)?;
         state.serialize_element(&self.lat)?;
@@ -51,7 +52,7 @@ impl<'de> Visitor<'de> for CoordsVisitor {
 
     fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
         where
-            A: serde::de::SeqAccess<'de>, {
+            A: SeqAccess<'de>, {
         let lng: f64 = match seq.next_element()? {
             Some(v) => v,
             None => return Err(DeError::invalid_length(0, &self))
@@ -71,7 +72,7 @@ impl<'de> Visitor<'de> for CoordsVisitor {
 impl<'de> Deserialize<'de> for Coords {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where
-            D: serde::Deserializer<'de> {
+            D: Deserializer<'de> {
         let t: (f64, f64) = deserializer.deserialize_tuple(2, CoordsVisitor)?;
         Ok(Coords::new(t.1, t.0))
     }
