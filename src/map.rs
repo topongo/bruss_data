@@ -1,4 +1,3 @@
-use uuid::Uuid;
 use crate::{Coords,BrussType};
 use serde::{Serialize,Deserialize};
 use tt::AreaType;

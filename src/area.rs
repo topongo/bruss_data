@@ -11,6 +11,7 @@ pub struct Area {
 }
 
 impl Area {
+    #[allow(dead_code)]
     pub(crate) fn new(id: u16, label: String, ty: AreaType) -> Self {
         Self { id, label, ty }
     }

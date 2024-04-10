@@ -52,3 +52,13 @@ impl<T: InArea> AreaHelper<T> {
     }
 }
 
+impl<T: InArea> FromIterator<T> for AreaHelper<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let mut o = Self::new();
+        for i in iter.into_iter() {
+            o.insert(i);
+        }
+        o
+    }
+}
+

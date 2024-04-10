@@ -1,9 +1,8 @@
-use std::collections::{HashMap, BTreeMap};
+use std::collections::HashMap;
 
 use chrono::NaiveTime;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tt::{TTTrip, AreaType};
-use sha1::Digest;
 
 use crate::{sequence_hash, BrussType, FromTT};
 

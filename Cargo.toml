@@ -15,3 +15,6 @@ md5 = "0.7.0"
 [features]
 db = ["dep:mongodb"]
 
+[dev-dependencies]
+serde_json = "^1.0"
+
