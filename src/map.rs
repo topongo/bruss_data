@@ -102,6 +102,33 @@ pub fn sequence_hash(ty: AreaType, seq: &Vec<u16>) -> String {
     format!("{:x}", hasher.finalize())
 }
 
+#[cfg(feature = "polyline")]
+pub(crate) mod polyline {
+    use super::Segment;
+    use super::AreaType;
+    use serde::Serialize;
+    use polyline::encode_coordinates;
+    use geo_types::LineString;
+
+    #[derive(Serialize)]
+    pub struct PolySegment {
+        pub from: u16,
+        pub to: u16,
+        #[serde(rename = "type")]
+        pub ty: AreaType,
+        pub polyline: String
+    }
+
+    impl From<Segment> for PolySegment {
+        fn from(value: Segment) -> Self {
+            let Segment { from, to, ty, coords } = value;
+            let polyline = encode_coordinates::<LineString>(LineString::from_iter(coords.iter().map(|c| (c.lat, c.lng))), 5).unwrap();
+            Self { from, to, ty, polyline }
+        }
+    }
+}
+
+
 #[test]
 fn sequence_hash_test() {
     assert_eq!(sequence_hash(AreaType::E, &vec![1, 2, 3]), sequence_hash(AreaType::E, &vec![1, 2, 3]));

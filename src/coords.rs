@@ -35,8 +35,8 @@ impl Serialize for Coords {
         where
             S: Serializer {
         let mut state = serializer.serialize_seq(Some(2))?;
-        state.serialize_element(&self.lng)?;
         state.serialize_element(&self.lat)?;
+        state.serialize_element(&self.lng)?;
         state.end()
     }
 }
@@ -47,24 +47,28 @@ impl<'de> Visitor<'de> for CoordsVisitor {
     type Value = (f64, f64);
  
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("an 2 item array representing [ lng, lat ]")
+        formatter.write_str("an 2 item array representing [ lat, lng ]")
     }
 
     fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
         where
             A: SeqAccess<'de>, {
-        let lng: f64 = match seq.next_element()? {
+        let lat: f64 = match seq.next_element()? {
             Some(v) => v,
             None => return Err(DeError::invalid_length(0, &self))
         };
-        let lat: f64 = match seq.next_element()? {
+        let lng: f64 = match seq.next_element()? {
             Some(v) => v,
             None => return Err(DeError::invalid_length(1, &self))
         };
 
         match seq.next_element::<f64>()? {
             Some(_) => Err(DeError::invalid_length(3, &self)),
-            None => Ok((lng, lat))
+            None => Ok(if lat > lng {
+                (lat, lng)
+            } else {
+                (lng, lat)
+            })
         }
     }
 }
@@ -73,8 +77,8 @@ impl<'de> Deserialize<'de> for Coords {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de> {
-        let t: (f64, f64) = deserializer.deserialize_tuple(2, CoordsVisitor)?;
-        Ok(Coords::new(t.1, t.0))
+        let (lat, lng): (f64, f64) = deserializer.deserialize_tuple(2, CoordsVisitor)?;
+        Ok(Coords::new(lat, lng))
     }
 }
 

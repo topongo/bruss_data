@@ -9,11 +9,14 @@ uuid = { version = "^1.8", features = ["v5", "fast-rng", "serde"] }
 chrono = { version = "^0.4", features = ["serde"] }
 mongodb = { version = "^2.8", optional = true }
 tt = { path = "../tt" }
-sha1 = "0.10.6"
-md5 = "0.7.0"
+sha1 = "^0.10"
+polyline = { version = "^0.10", optional = true }
+geo-types = { verison = "^0.7", version = "0.7.13" }
 
 [features]
+default = ["db", "polyline"]
 db = ["dep:mongodb"]
+polyline = ["dep:polyline"]
 
 [dev-dependencies]
 serde_json = "^1.0"

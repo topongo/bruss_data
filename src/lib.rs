@@ -13,6 +13,8 @@ pub use route::Route;
 pub use stop::Stop;
 pub use coords::Coords;
 pub use map::{Segment,Path,StopPair,sequence_hash};
+#[cfg(feature = "polyline")]
+pub use map::polyline::PolySegment;
 pub use trip::{Trip,Direction};
 pub use helpers::AreaHelper;
 
