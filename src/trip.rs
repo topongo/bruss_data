@@ -75,7 +75,9 @@ impl FromTT<TTTrip> for Trip {
         let path = sequence_hash(ty, &stop_times.iter()
             .map(|st| {
                 let tt::StopTime { stop, arrival, departure, .. } = *st;
-                times.insert(stop, StopTime { arrival, departure });
+                times.insert(stop, StopTime { 
+                    arrival: arrival.unwrap_or(NaiveTime::from_hms_opt(0, 0, 0).unwrap()),
+                    departure: departure.unwrap_or(NaiveTime::from_hms_opt(0, 0, 0).unwrap()) });
                 st.stop
             })
             .collect());

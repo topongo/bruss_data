@@ -19,6 +19,16 @@ impl Route {
     pub fn new(id: u16, ty: u16, area: u16, area_ty: AreaType, color: String, name: String, code: String) -> Self {
         Self { id, area, color, name, code, ty, area_ty }
     }
+
+    // hardcoding it since it won't likely change
+    pub fn is_cableway(&self) -> bool {
+        self.area == 8
+    }
+    
+    // hardcoding it since it won't likely change
+    pub fn is_railway(&self) -> bool {
+        self.area == 7
+    }
 }
 
 impl BrussType for Route {
