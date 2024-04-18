@@ -16,6 +16,7 @@ pub struct Path {
 }
 
 #[derive(Clone,Copy,Serialize,Deserialize,Debug,Default,PartialEq,Eq,Hash)]
+#[serde(rename_all = "snake_case")]
 pub enum RoutingType {
     #[default]
     Bus,
