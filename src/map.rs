@@ -1,4 +1,4 @@
-use crate::{Coords,BrussType};
+use crate::{BrussType, Coords, Route};
 use serde::{Serialize,Deserialize};
 use tt::AreaType;
 use sha1::Digest;
@@ -11,11 +11,27 @@ pub struct Path {
     #[serde(rename = "type")]
     pub ty: AreaType,
     pub sequence: Vec<u16>,
+    #[serde(default)]
+    pub rty: RoutingType,
+}
+
+#[derive(Clone,Copy,Serialize,Deserialize,Debug,Default,PartialEq,Eq,Hash)]
+pub enum RoutingType {
+    #[default]
+    Bus,
+    Railway,
+    Cableway,
+}
+
+impl From<&'_ Route> for RoutingType {
+    fn from(value: &Route) -> Self {
+        value.routing_type()
+    }
 }
 
 impl Path {
-    pub fn new(sequence: Vec<u16>, ty: AreaType) -> Self {
-        Self { id: sequence_hash(ty, &sequence), sequence, ty }
+    pub fn new(sequence: Vec<u16>, ty: AreaType, rty: RoutingType) -> Self {
+        Self { id: sequence_hash(ty, &sequence), sequence, ty, rty }
     }
 
     pub fn segments_to_sequence(segments: Vec<StopPair>) -> Vec<u16> {
@@ -35,7 +51,11 @@ impl Path {
     }
 
     pub fn new_from_segments(segments: Vec<StopPair>, ty: AreaType) -> Self {
-        Self::new(Self::segments_to_sequence(segments), ty)
+        Self::new_from_segments_with_type(segments, ty, RoutingType::default())
+    }
+
+    pub fn new_from_segments_with_type(segments: Vec<StopPair>, ty: AreaType, routing_ty: RoutingType) -> Self {
+        Self::new(Self::segments_to_sequence(segments), ty, routing_ty)
     }
 
     pub fn segments(&self) -> Vec<StopPair> {
@@ -138,7 +158,7 @@ fn sequence_hash_test() {
 
 #[test]
 fn path_test_from_segments() {
-    let p1 = Path::new(vec![12, 15, 18, 20], AreaType::E);
+    let p1 = Path::new(vec![12, 15, 18, 20], AreaType::E, RoutingType::Bus);
     let p2 = Path::new_from_segments(vec![(12, 15), (15, 18), (18, 20)], AreaType::E);
 
     assert_eq!(p1.sequence, p2.sequence);

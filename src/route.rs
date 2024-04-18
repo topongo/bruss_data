@@ -1,6 +1,8 @@
 use serde::{Serialize,Deserialize};
 use tt::{AreaType, TTRoute};
 
+use crate::RoutingType;
+
 use super::{BrussType, FromTT};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -20,14 +22,12 @@ impl Route {
         Self { id, area, color, name, code, ty, area_ty }
     }
 
-    // hardcoding it since it won't likely change
-    pub fn is_cableway(&self) -> bool {
-        self.area == 8
-    }
-    
-    // hardcoding it since it won't likely change
-    pub fn is_railway(&self) -> bool {
-        self.area == 7
+    pub fn routing_type(&self) -> RoutingType {
+        match self.area {
+            7 => RoutingType::Railway,
+            8 => RoutingType::Cableway,
+            _ => RoutingType::Bus,
+        }
     }
 }
 
