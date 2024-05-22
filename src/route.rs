@@ -1,7 +1,7 @@
 use serde::{Serialize,Deserialize};
 use tt::{AreaType, TTRoute};
 
-use crate::RoutingType;
+use crate::{Type, RoutingType};
 
 use super::{BrussType, FromTT};
 
@@ -11,6 +11,7 @@ pub struct Route {
     #[serde(rename = "type")]
     pub ty: u16,
     area: u16,
+    // #[serde(rename = "area_ty")]
     pub area_ty: AreaType,
     color: String,
     name: String,
@@ -32,7 +33,7 @@ impl Route {
 }
 
 impl BrussType for Route {
-    const DB_NAME: &'static str = "routes";
+    const TYPE: Type = Type::Route;
 }
 
 impl FromTT<TTRoute> for Route {

@@ -4,11 +4,13 @@ use chrono::NaiveTime;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tt::{TTTrip, AreaType};
 
-use crate::{sequence_hash, BrussType, FromTT};
+use crate::{sequence_hash, BrussType, FromTT, Type};
 
 #[derive(Serialize,Deserialize,Debug)]
 pub enum Direction {
+    #[serde(rename = "f")]
     Forward,
+    #[serde(rename = "b")]
     Backward
 }
 
@@ -65,7 +67,7 @@ impl Trip {
 }
 
 impl BrussType for Trip {
-    const DB_NAME: &'static str = "trips";
+    const TYPE: Type = Type::Trip;
 }
 
 impl FromTT<TTTrip> for Trip {

@@ -1,5 +1,6 @@
 use serde::{Serialize,Deserialize};
 use tt::{TTStop,AreaType};
+use crate::Type;
 use crate::Coords;
 use crate::InArea;
 
@@ -28,7 +29,7 @@ impl Stop {
 }
 
 impl BrussType for Stop {
-    const DB_NAME: &'static str = "stops";
+    const TYPE: Type = Type::Stop;
 }
 
 impl FromTT<TTStop> for Stop {
@@ -47,4 +48,6 @@ impl InArea for Stop {
         self.id
     }
 }
+
+pub type StopPair = (u16, u16);
 

@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tt::{TTArea,AreaType};
+use crate::Type;
+
 use super::{BrussType, FromTT};
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -18,7 +20,7 @@ impl Area {
 }
 
 impl BrussType for Area {
-    const DB_NAME: &'static str = "areas";
+    const TYPE: Type = Type::Area;
 }
 
 impl FromTT<TTArea> for Area {
