@@ -7,7 +7,7 @@ mod stop;
 mod map;
 mod trip;
 mod helpers;
-mod log;
+// mod log;
 mod ty;
 // mod database;
 
