@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use chrono::NaiveTime;
+use mongodb::bson::Document;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tt::{TTTrip, AreaType};
 
