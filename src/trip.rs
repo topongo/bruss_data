@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 use chrono::NaiveTime;
-use mongodb::bson::Document;
+use mongodb::bson::{doc, Document};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tt::{TTTrip, AreaType};
 
 use crate::{sequence_hash, BrussType, FromTT, Type};
 
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(Serialize,Deserialize,Debug,PartialEq)]
 pub enum Direction {
     #[serde(rename = "f")]
     Forward,
@@ -25,7 +25,7 @@ impl From<u16> for Direction {
     }
 }
 
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(Serialize,Deserialize,Debug,PartialEq)]
 pub struct StopTime {
     pub arrival: NaiveTime,
     pub departure: NaiveTime,
@@ -65,6 +65,25 @@ impl Trip {
     ) -> Self {
         Self { id, delay, direction, next_stop, last_stop, bus_id, route, path, times, ty, headsign }
     } 
+
+    pub fn deep_cmp(&self, other: &Self) -> bool {
+        self.id == other.id &&
+        self.delay == other.delay &&
+        self.direction == other.direction &&
+        self.next_stop == other.next_stop &&
+        self.last_stop == other.last_stop &&
+        self.bus_id == other.bus_id &&
+        self.route == other.route &&
+        self.headsign == other.headsign &&
+        self.path == other.path &&
+        self.times == other.times &&
+        self.ty == other.ty
+    }
+
+    pub fn merge(self, other: Self) -> Self {
+        let Self { delay, next_stop, last_stop, bus_id, .. } = other;
+        Self { delay, next_stop, last_stop, bus_id, ..self }
+    }
 }
 
 impl BrussType for Trip {
@@ -100,6 +119,11 @@ impl FromTT<TTTrip> for Trip {
     }
 }
 
+impl PartialEq for Trip {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
  
 fn serialize_u16_keys<S, T>(map: &HashMap<u16, T>, serializer: S) -> Result<S::Ok, S::Error> 
     where 
