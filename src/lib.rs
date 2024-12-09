@@ -12,7 +12,6 @@ mod ty;
 // mod database;
 
 pub use area::Area;
-use mongodb::bson::Document;
 pub use ty::Type;
 pub use route::Route;
 pub use stop::{Stop,StopPair};

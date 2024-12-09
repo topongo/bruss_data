@@ -1,7 +1,5 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 
-use chrono::NaiveTime;
-use mongodb::bson::{doc, Document};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tt::{TTTrip, AreaType};
 
@@ -27,8 +25,8 @@ impl From<u16> for Direction {
 
 #[derive(Serialize,Deserialize,Debug,PartialEq)]
 pub struct StopTime {
-    pub arrival: NaiveTime,
-    pub departure: NaiveTime,
+    pub arrival: Duration,
+    pub departure: Duration,
 }
 
 #[derive(Serialize,Deserialize,Debug)]
@@ -45,6 +43,7 @@ pub struct Trip {
     pub path: String,
     #[serde(serialize_with = "serialize_u16_keys", deserialize_with = "deserialize_u16_keys")]
     pub times: HashMap<u16, StopTime>,
+    pub sequence: Vec<u16>,
     #[serde(rename = "type")]
     pub ty: AreaType,
 }
@@ -61,9 +60,10 @@ impl Trip {
         headsign: String,
         path: String,
         times: HashMap<u16, StopTime>,
+        sequence: Vec<u16>,
         ty: AreaType
     ) -> Self {
-        Self { id, delay, direction, next_stop, last_stop, bus_id, route, path, times, ty, headsign }
+        Self { id, delay, direction, next_stop, last_stop, bus_id, route, path, times, ty, headsign, sequence }
     } 
 
     pub fn deep_cmp(&self, other: &Self) -> bool {
@@ -77,6 +77,7 @@ impl Trip {
         self.headsign == other.headsign &&
         self.path == other.path &&
         self.times == other.times &&
+        self.sequence == other.sequence &&
         self.ty == other.ty
     }
 
@@ -94,12 +95,14 @@ impl FromTT<TTTrip> for Trip {
     fn from_tt(value: TTTrip) -> Self {
         let TTTrip { id, delay, direction, next_stop, last_stop, bus_id, route, stop_times, ty, headsign } = value;
         let mut times = HashMap::new();
+        let sequence = stop_times.iter().map(|st| st.stop).collect();
         let path = sequence_hash(ty, &stop_times.iter()
             .map(|st| {
                 let tt::StopTime { stop, arrival, departure, .. } = *st;
                 times.insert(stop, StopTime { 
-                    arrival: arrival.unwrap_or(NaiveTime::from_hms_opt(0, 0, 0).unwrap()),
-                    departure: departure.unwrap_or(NaiveTime::from_hms_opt(0, 0, 0).unwrap()) });
+                    arrival,
+                    departure,
+                });
                 st.stop
             })
             .collect());
@@ -114,6 +117,7 @@ impl FromTT<TTTrip> for Trip {
             path,
             ty,
             times,
+            sequence,
             headsign,
         }
     }
