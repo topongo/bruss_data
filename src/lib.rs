@@ -11,6 +11,8 @@ mod helpers;
 mod ty;
 // mod database;
 mod schedule;
+#[path = "serde.rs"]
+mod serde_inner;
 
 pub use area::Area;
 pub use ty::Type;
@@ -25,6 +27,7 @@ pub use helpers::AreaHelper;
 pub use schedule::Schedule;
 
 use serde::{de::DeserializeOwned, Serialize};
+
 use tt::{TTType, AreaType};
 
 pub trait BrussType: Serialize + DeserializeOwned {
