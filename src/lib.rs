@@ -10,6 +10,7 @@ mod helpers;
 // mod log;
 mod ty;
 // mod database;
+mod schedule;
 
 pub use area::Area;
 pub use ty::Type;
@@ -21,6 +22,7 @@ pub use map::{Segment,Path,RoutingType,sequence_hash};
 pub use map::polyline::PolySegment;
 pub use trip::{Trip,Direction};
 pub use helpers::AreaHelper;
+pub use schedule::Schedule;
 
 use serde::{de::DeserializeOwned, Serialize};
 use tt::{TTType, AreaType};

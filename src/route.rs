@@ -10,12 +10,12 @@ pub struct Route {
     pub id: u16,
     #[serde(rename = "type")]
     pub ty: u16,
-    area: u16,
+    pub area: u16,
     // #[serde(rename = "area_ty")]
     pub area_ty: AreaType,
-    color: String,
-    name: String,
-    code: String,
+    pub color: String,
+    pub name: String,
+    pub code: String,
 }
 
 impl Route {

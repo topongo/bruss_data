@@ -1,9 +1,10 @@
-use std::{collections::HashMap, time::Duration};
+use std::collections::HashMap;
 
+use chrono::TimeDelta;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tt::{TTTrip, AreaType};
 
-use crate::{sequence_hash, BrussType, FromTT, Type};
+use crate::{sequence_hash, BrussType, Type};
 
 #[derive(Serialize,Deserialize,Debug,PartialEq)]
 pub enum Direction {
@@ -25,8 +26,8 @@ impl From<u16> for Direction {
 
 #[derive(Serialize,Deserialize,Debug,PartialEq)]
 pub struct StopTime {
-    pub arrival: Duration,
-    pub departure: Duration,
+    pub arrival: TimeDelta,
+    pub departure: TimeDelta,
 }
 
 #[derive(Serialize,Deserialize,Debug)]
@@ -43,7 +44,6 @@ pub struct Trip {
     pub path: String,
     #[serde(serialize_with = "serialize_u16_keys", deserialize_with = "deserialize_u16_keys")]
     pub times: HashMap<u16, StopTime>,
-    pub sequence: Vec<u16>,
     #[serde(rename = "type")]
     pub ty: AreaType,
 }
@@ -60,10 +60,9 @@ impl Trip {
         headsign: String,
         path: String,
         times: HashMap<u16, StopTime>,
-        sequence: Vec<u16>,
         ty: AreaType
     ) -> Self {
-        Self { id, delay, direction, next_stop, last_stop, bus_id, route, path, times, ty, headsign, sequence }
+        Self { id, delay, direction, next_stop, last_stop, bus_id, route, path, times, ty, headsign }
     } 
 
     pub fn deep_cmp(&self, other: &Self) -> bool {
@@ -77,7 +76,6 @@ impl Trip {
         self.headsign == other.headsign &&
         self.path == other.path &&
         self.times == other.times &&
-        self.sequence == other.sequence &&
         self.ty == other.ty
     }
 
@@ -91,14 +89,18 @@ impl BrussType for Trip {
     const TYPE: Type = Type::Trip;
 }
 
-impl FromTT<TTTrip> for Trip {
-    fn from_tt(value: TTTrip) -> Self {
+impl Trip {
+    pub fn from_tt(value: TTTrip) -> (Self, TimeDelta) {
         let TTTrip { id, delay, direction, next_stop, last_stop, bus_id, route, stop_times, ty, headsign } = value;
         let mut times = HashMap::new();
-        let sequence = stop_times.iter().map(|st| st.stop).collect();
+        // this usually takes O(1) since usually stop_times[0].sequence == 1
+        // (sequence starts at 1)
+        let dep = stop_times.iter().find(|st| st.sequence == 1).unwrap().departure;
         let path = sequence_hash(ty, &stop_times.iter()
             .map(|st| {
                 let tt::StopTime { stop, arrival, departure, .. } = *st;
+                let arrival = arrival - dep;
+                let departure = departure - dep;
                 times.insert(stop, StopTime { 
                     arrival,
                     departure,
@@ -106,7 +108,9 @@ impl FromTT<TTTrip> for Trip {
                 st.stop
             })
             .collect());
-        Self { 
+        // if departure if after midnight but before 4am we assume it's the next day.
+        let dep = if dep < TimeDelta::hours(4) { dep + TimeDelta::days(1) } else { dep };
+        (Self { 
             id,
             delay: delay.unwrap_or(0.) as i32,
             direction: Direction::from(direction), 
@@ -117,9 +121,8 @@ impl FromTT<TTTrip> for Trip {
             path,
             ty,
             times,
-            sequence,
             headsign,
-        }
+        }, dep)
     }
 }
 

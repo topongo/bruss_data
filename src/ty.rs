@@ -8,11 +8,13 @@ pub enum Type {
     Trip,
     Path,
     Segment,
+    Schedule,
 }
 
 pub enum Identification {
     Id,
-    FromTo
+    FromTo,
+    IdDate,
 }
 
 impl Type {
@@ -24,12 +26,14 @@ impl Type {
             Self::Path => "paths",
             Self::Route => "routes",
             Self::Segment => "segments",
+            Self::Schedule => "schedules",
         }
     }
 
     pub fn identify(&self) -> Identification {
         match self {
             Self::Segment => Identification::FromTo,
+            Self::Schedule => Identification::IdDate,
             _ => Identification::Id
         }
     }
