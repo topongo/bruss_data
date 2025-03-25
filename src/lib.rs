@@ -9,10 +9,13 @@ mod trip;
 mod helpers;
 // mod log;
 mod ty;
-// mod database;
+
+#[cfg(feature = "db")]
 mod schedule;
 #[path = "serde.rs"]
 mod serde_inner;
+#[cfg(feature = "db")]
+pub use schedule::Schedule;
 
 pub use area::Area;
 pub use ty::Type;
@@ -24,7 +27,6 @@ pub use map::{Segment,Path,RoutingType,sequence_hash};
 pub use map::polyline::PolySegment;
 pub use trip::{Trip,Direction};
 pub use helpers::AreaHelper;
-pub use schedule::Schedule;
 
 use serde::{de::DeserializeOwned, Serialize};
 

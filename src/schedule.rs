@@ -6,6 +6,7 @@ use crate::{BrussType, Trip};
 #[derive(Serialize,Deserialize,Debug,Hash,PartialEq,Eq)]
 pub struct Schedule {
     pub id: String,
+    #[serde(with = "mongodb::bson::serde_helpers::chrono_datetime_as_bson_datetime")]
     pub departure: DateTime<Utc>,
 }
 

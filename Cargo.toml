@@ -8,6 +8,7 @@ serde = { version = "^1", features = ["derive"] }
 uuid = { version = "^1.8", features = ["v5", "fast-rng", "serde"] }
 chrono = { version = "^0.4", features = ["serde"] }
 mongodb = { workspace = true, optional = true }
+bson = { workspace = true, optional = true }
 tt = { path = "../tt" }
 sha1 = "^0.10"
 polyline = { version = "^0.11", optional = true }
@@ -15,7 +16,7 @@ geo-types = { version = "^0.7.13" }
 
 [features]
 default = ["db", "polyline"]
-db = ["dep:mongodb"]
+db = ["dep:mongodb", "dep:bson"]
 polyline = ["dep:polyline"]
 
 [dev-dependencies]
