@@ -12,8 +12,6 @@ mod ty;
 
 #[cfg(feature = "db")]
 mod schedule;
-#[path = "serde.rs"]
-mod serde_inner;
 #[cfg(feature = "db")]
 pub use schedule::Schedule;
 
