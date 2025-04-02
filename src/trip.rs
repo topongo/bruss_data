@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display, str::FromStr};
 
 use chrono::TimeDelta;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -20,6 +20,47 @@ impl From<u16> for Direction {
             0 => Direction::Forward,
             1 => Direction::Backward,
             _ => panic!("unrecognized value for Direction: {}", value)
+        }
+    }
+}
+
+impl From<&Direction> for char {
+    fn from(value: &Direction) -> Self {
+        match value {
+            Direction::Forward => 'f',
+            Direction::Backward => 'b'
+        }
+    }
+}
+
+impl From<&Direction> for &str {
+    fn from(value: &Direction) -> Self {
+        match value {
+            Direction::Forward => "f",
+            Direction::Backward => "b"
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct DirectionParseError;
+
+impl std::error::Error for DirectionParseError {}
+
+impl Display for DirectionParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl FromStr for Direction {
+    type Err = DirectionParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "f" => Ok(Direction::Forward),
+            "b" => Ok(Direction::Backward),
+            _ => Err(DirectionParseError)
         }
     }
 }
