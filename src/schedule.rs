@@ -43,8 +43,8 @@ impl Hash for Schedule {
 
 #[derive(Serialize,Deserialize,Debug,PartialEq)]
 pub struct ScheduleHints {
-    #[serde(rename = "type")]
     pub route: u16,
+    #[serde(rename = "type")]
     pub ty: AreaType,
     pub times: StopTimes,
     pub direction: Direction,
