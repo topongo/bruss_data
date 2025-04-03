@@ -92,6 +92,10 @@ impl StopTimes {
     pub fn get(&self, stop: &u16) -> Option<&StopTime> {
         self.0.get(stop)
     }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&u16, &StopTime)> {
+        self.0.iter()
+    }
 }
 
 #[derive(Serialize,Deserialize,Debug)]
