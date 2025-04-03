@@ -13,7 +13,7 @@ mod ty;
 #[cfg(feature = "db")]
 mod schedule;
 #[cfg(feature = "db")]
-pub use schedule::Schedule;
+pub use schedule::{Schedule, ScheduleHints};
 
 pub use area::Area;
 pub use ty::Type;
@@ -23,7 +23,7 @@ pub use coords::Coords;
 pub use map::{Segment,Path,RoutingType,sequence_hash};
 #[cfg(feature = "polyline")]
 pub use map::polyline::PolySegment;
-pub use trip::{Trip,Direction};
+pub use trip::{Trip,Direction,StopTime,StopTimes};
 pub use helpers::AreaHelper;
 
 use serde::{de::DeserializeOwned, Serialize};
