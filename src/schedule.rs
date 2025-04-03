@@ -11,6 +11,8 @@ pub struct Schedule {
     pub id: String,
     #[serde(with = "mongodb::bson::serde_helpers::chrono_datetime_as_bson_datetime")]
     pub departure: DateTime<Utc>,
+    #[serde(with = "mongodb::bson::serde_helpers::chrono_datetime_as_bson_datetime")]
+    pub arrival: DateTime<Utc>,
     pub hints: ScheduleHints,
 }
 
@@ -19,8 +21,10 @@ impl BrussType for Schedule {
 }
 
 impl Schedule {
-    pub fn from_trip(trip: &Trip, date: DateTime<Utc>) -> Self {
-        Self { id: trip.id.clone(), departure: date, hints: ScheduleHints::from(trip) }
+    pub fn from_trip(trip: &Trip, departure: DateTime<Utc>) -> Self {
+        let hints = ScheduleHints::from(trip);
+        let arrival = departure + hints.times.iter().max_by_key(|(_, v)| v.arrival.max(v.departure)).unwrap().1.departure;
+        Self { id: trip.id.clone(), departure, hints, arrival }
     }
 }
 
