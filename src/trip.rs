@@ -101,6 +101,7 @@ impl StopTimes {
 #[derive(Serialize,Deserialize,Debug)]
 pub struct Trip {
     pub id: String,
+    #[serde(skip_serializing)]
     pub delay: i32,
     pub direction: Direction,
     pub next_stop: u16,
