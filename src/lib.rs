@@ -7,6 +7,7 @@ mod stop;
 mod map;
 mod trip;
 mod helpers;
+mod stop_time;
 // mod log;
 mod ty;
 
@@ -23,7 +24,8 @@ pub use coords::Coords;
 pub use map::{Segment,Path,RoutingType,sequence_hash};
 #[cfg(feature = "polyline")]
 pub use map::polyline::PolySegment;
-pub use trip::{Trip,Direction,StopTime,StopTimes};
+pub use trip::{Trip,Direction};
+pub use stop_time::{StopTime,StopTimes};
 pub use helpers::AreaHelper;
 
 use serde::{de::DeserializeOwned, Serialize};

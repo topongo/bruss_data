@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Serialize,Deserialize};
 use tt::AreaType;
 
-use crate::{trip::StopTimes, BrussType, Direction, Trip};
+use crate::{stop_time::StopTimes, BrussType, Direction, Trip};
 
 #[derive(Serialize,Deserialize,Debug)]
 pub struct Schedule {
