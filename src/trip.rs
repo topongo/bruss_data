@@ -77,11 +77,13 @@ impl Display for Direction {
 #[derive(Serialize,Deserialize,Debug)]
 pub struct Trip {
     pub id: String,
-    #[serde(skip_serializing)]
+    #[serde(skip_serializing,default)]
     pub delay: i32,
     pub direction: Direction,
-    pub next_stop: u16,
-    pub last_stop: u16,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub next_stop: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_stop: Option<u16>,
     pub bus_id: Option<u16>,
     pub route: u16,
     pub headsign: String,
@@ -106,7 +108,7 @@ impl Trip {
         times: HashMap<u16, StopTime>,
         ty: AreaType
     ) -> Self {
-        Self { id, delay, direction, next_stop, last_stop, bus_id, route, path, times: StopTimes(times), ty, headsign }
+        Self { id, delay, direction, next_stop: if next_stop == 0 { None } else { Some(next_stop) }, last_stop: if last_stop == 0 { None } else { Some(last_stop) }, bus_id, route, path, times: StopTimes(times), ty, headsign }
     } 
 
     pub fn deep_cmp(&self, other: &Self) -> bool {
@@ -159,8 +161,8 @@ impl Trip {
             id,
             delay: delay.unwrap_or(0.) as i32,
             direction: Direction::from(direction), 
-            next_stop,
-            last_stop,
+            next_stop: if next_stop == 0 { None } else { Some(next_stop) },
+            last_stop: if last_stop == 0 { None } else { Some(last_stop) },
             bus_id,
             route,
             path,
