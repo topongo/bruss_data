@@ -9,7 +9,7 @@ pub use segment::Segment;
 use tt::AreaType;
 use sha1::Digest;
 
-pub fn sequence_hash(ty: AreaType, seq: &Vec<u16>) -> String {
+pub fn sequence_hash(ty: AreaType, seq: &[u16]) -> String {
     let mut data = Vec::from([ty.into(), 0x0, 0x0]);
     data.append(&mut seq.iter()
         // split stop id (16 bytes) into 2 u8 (8 bytes)
