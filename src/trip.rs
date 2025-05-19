@@ -151,7 +151,7 @@ impl Trip {
                 });
                 st.stop
             })
-            .collect());
+            .collect::<Vec<u16>>());
         // if departure if after midnight but before 4am we assume it's the next day.
         let dep = if dep < TimeDelta::hours(4) { dep + TimeDelta::days(1) } else { dep };
         let dep = TimeDelta::from(dep);

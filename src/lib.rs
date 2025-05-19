@@ -1,5 +1,3 @@
-#![feature(iter_intersperse)]
-
 mod area;
 mod route;
 mod coords;
