@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fmt::Display, str::FromStr};
 
-use chrono::TimeDelta;
+use chrono::{TimeDelta, Utc, DateTime};
 use serde::{Deserialize, Serialize};
 use tt::{TTTrip, AreaType};
 
@@ -92,6 +92,7 @@ pub struct Trip {
     pub times: StopTimes,
     #[serde(rename = "type")]
     pub ty: AreaType,
+    pub last_event: Option<DateTime<Utc>>,
 }
 
 impl Trip {
@@ -106,9 +107,10 @@ impl Trip {
         headsign: String,
         path: String,
         times: HashMap<u16, StopTime>,
-        ty: AreaType
+        ty: AreaType,
+        last_event: Option<DateTime<Utc>>,
     ) -> Self {
-        Self { id, delay, direction, next_stop: if next_stop == 0 { None } else { Some(next_stop) }, last_stop: if last_stop == 0 { None } else { Some(last_stop) }, bus_id, route, path, times: StopTimes(times), ty, headsign }
+        Self { id, delay, direction, next_stop: if next_stop == 0 { None } else { Some(next_stop) }, last_stop: if last_stop == 0 { None } else { Some(last_stop) }, bus_id, route, path, times: StopTimes(times), ty, headsign, last_event }
     } 
 
     pub fn deep_cmp(&self, other: &Self) -> bool {
@@ -137,7 +139,7 @@ impl BrussType for Trip {
 
 impl Trip {
     pub fn from_tt(value: TTTrip) -> (Self, TimeDelta) {
-        let TTTrip { id, delay, direction, next_stop, last_stop, bus_id, route, stop_times, ty, headsign } = value;
+        let TTTrip { id, delay, direction, next_stop, last_stop, bus_id, route, stop_times, ty, headsign, last_event } = value;
         let mut times = HashMap::new();
         // this usually takes O(1) since usually stop_times[0].sequence == 1
         // (sequence starts at 1)
@@ -169,6 +171,7 @@ impl Trip {
             ty,
             times: StopTimes(times),
             headsign,
+            last_event,
         }, dep)
     }
 }
