@@ -24,10 +24,12 @@ impl Route {
     }
 
     pub fn routing_type(&self) -> RoutingType {
-        match self.area {
-            7 => RoutingType::Railway,
-            8 => RoutingType::Cableway,
-            _ => RoutingType::Bus,
+        match self.ty {
+            2 => RoutingType::Railway,
+            3 => RoutingType::Bus,
+            5 => RoutingType::Cableway,
+            // undefined behavior
+            _ => panic!("route type {} is not recognized (valid values are 2 => railway, 3 => bus, 5 => cableway)", self.ty)
         }
     }
 }
