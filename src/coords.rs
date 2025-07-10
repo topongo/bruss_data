@@ -21,12 +21,12 @@ impl Coords {
     }
 }
 
-impl Sub for Coords {
+impl Sub for &Coords {
     type Output = f64;
     
     /// Returns the difference in meters from two positions
     fn sub(self, rhs: Self) -> Self::Output {
-        ((self.lat - rhs.lat).abs().powi(2) + (self.lng - rhs.lng).abs().powi(2)).sqrt() * Self::DEG_METER
+        ((self.lat - rhs.lat).abs().powi(2) + (self.lng - rhs.lng).abs().powi(2)).sqrt() * Coords::DEG_METER
     }
 }
 
